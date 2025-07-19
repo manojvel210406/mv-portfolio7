@@ -1,0 +1,178 @@
+<!DOCTYPE html><html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Energy Billing Calculator</title>
+
+    <style>
+        /* style.css */
+
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%); color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; animation: fadeIn 1s ease-in; }
+
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.container { background-color: rgba(255, 255, 255, 0.9); padding: 2rem 3rem; border-radius: 2rem; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2); max-width: 550px; width: 100%; transition: all 0.3s ease-in-out; animation: popUp 0.5s ease-in-out; }
+
+@keyframes popUp { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+h1 { text-align: center; color: #6a1b9a; margin-bottom: 1.5rem; font-weight: bold; letter-spacing: 1px; }
+
+label { display: block; margin-bottom: 0.4rem; color: #4a148c; font-weight: 500; font-size: 0.95rem; }
+
+input[type="number"] { width: 100%; padding: 0.65rem; margin-bottom: 1.2rem; border: 1px solid #ccc; border-radius: 1rem; outline: none; font-size: 1rem; transition: border-color 0.3s, transform 0.3s; box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05); }
+
+input[type="number"]:focus { border-color: #7b1fa2; transform: scale(1.02); }
+
+button { width: 100%; padding: 0.85rem; background: linear-gradient(to right, #7b1fa2, #9c27b0); color: #fff; border: none; border-radius: 1rem; font-size: 1.05rem; cursor: pointer; transition: transform 0.2s ease, background 0.3s ease; font-weight: bold; letter-spacing: 0.5px; }
+
+button:hover { transform: scale(1.03); background: linear-gradient(to right, #6a1b9a, #ab47bc); }
+
+.result { margin-top: 2rem; background-color: #f3e5f5; padding: 1.2rem; border-radius: 1.2rem; box-shadow: inset 0 0 12px rgba(0, 0, 0, 0.05); animation: fadeIn 1s ease-in-out; }
+
+.result h3 { margin-bottom: 1rem; color: #4a148c; text-align: center; font-size: 1.2rem; }
+
+.result p { margin: 0.5rem 0; font-weight: 500; font-size: 1rem; color: #333; }
+
+.radio-group { display: flex; justify-content: space-evenly; margin-bottom: 1.5rem; }
+
+.radio-group label { font-weight: 600; color: #6a1b9a; cursor: pointer; font-size: 0.95rem; }
+
+.hidden { display: none; }
+
+footer { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #555; opacity: 0.8; font-style: italic; }
+
+@media (max-width: 600px) { .container { padding: 1.5rem; border-radius: 1.2rem; }
+
+h1 { font-size: 1.6rem; }
+
+button { font-size: 1rem; } }
+    
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f0f4f8;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        h1 {
+            color: #2a2f45;
+        }
+        .container {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4a90e2;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #357ab8;
+        }
+        .result {
+            margin-top: 20px;
+            background: #e8f0fe;
+            padding: 20px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Smart Energy Billing Calculator</h1>
+    <h3>by</h3>
+    <h2>Manoj Velmurugan</h2>
+    <div class="container">
+        <label for="mode">Choose Input Mode:</label>
+        <select id="mode" onchange="toggleInputMode()">
+            <option value="units">Enter Units</option>
+            <option value="amount">Enter Amount</option>
+        </select><div id="unitInput">
+        <label for="units">Enter Units Consumed (in units):</label>
+        <input type="number" id="units" placeholder="e.g. 350">
+    </div>
+
+    <div id="amountInput" style="display:none">
+        <label for="amount">Enter Bill Amount (₹):</label>
+        <input type="number" id="amount" placeholder="e.g. 1800">
+    </div>
+
+    <button onclick="calculate()">Calculate</button>
+
+    <div class="result" id="result"></div>
+</div>
+
+<script>
+    function toggleInputMode() {
+        const mode = document.getElementById('mode').value;
+        document.getElementById('unitInput').style.display = mode === 'units' ? 'block' : 'none';
+        document.getElementById('amountInput').style.display = mode === 'amount' ? 'block' : 'none';
+        document.getElementById('result').innerHTML = '';
+    }
+
+    function calculateBill(units) {
+        let amount = 0;
+        if (units <= 100) amount = units * 2;
+        else if (units <= 200) amount = 100 * 2 + (units - 100) * 4;
+        else if (units <= 300) amount = 100 * 2 + 100 * 4 + (units - 200) * 6;
+        else amount = 100 * 2 + 100 * 4 + 100 * 6 + (units - 300) * 8;
+        return amount;
+    }
+
+    function estimateUnits(amount) {
+        let units = 0;
+        if (amount <= 200) units = amount / 2;
+        else if (amount <= 600) units = 100 + (amount - 200) / 4;
+        else if (amount <= 1200) units = 200 + (amount - 600) / 6;
+        else units = 300 + (amount - 1200) / 8;
+        return units;
+    }
+
+    function calculate() {
+        const mode = document.getElementById('mode').value;
+        const days = 30;
+        let units, amount;
+
+        if (mode === 'units') {
+            units = parseFloat(document.getElementById('units').value);
+            if (isNaN(units) || units < 0) return alert("Enter valid units");
+            amount = calculateBill(units);
+        } else {
+            amount = parseFloat(document.getElementById('amount').value);
+            if (isNaN(amount) || amount < 0) return alert("Enter valid amount");
+            units = estimateUnits(amount);
+        }
+
+        const avgUnits = (units / days).toFixed(2);
+        const avgAmount = (amount / days).toFixed(2);
+        const current = ((units * 1000) / 230).toFixed(2);
+        const avgCurrent = (current / days).toFixed(2);
+
+        let resultHTML = `
+            <p><strong>Total Amount:</strong> ₹${amount.toFixed(2)}</p>
+            <p><strong>Average Units/Day:</strong> ${avgUnits} units</p>
+            <p><strong>Average Amount/Day:</strong> ₹${avgAmount}</p>
+            <p><strong>Total Current Drawn:</strong> ${current} A</p>
+            <p><strong>Average Daily Current:</strong> ${avgCurrent} A</p>
+        `;
+
+        document.getElementById('result').innerHTML = resultHTML;
+    }
+</script>
+
+</body>
+</html>
